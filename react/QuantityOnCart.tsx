@@ -19,8 +19,8 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   const productId = productContextValue?.product?.items[0]?.itemId
   const [itemQuantity, setItemQuantity]: any = useState(null)
 
+  const [buyButton, setBuyButton]: any = useState(null)
   const selectedQuantity = productContextValue?.selectedQuantity
-  //const buyButton = productContextValue?.buyButton
 
   const [itemsCartUpdate, setItemsCartUpdate]: any = useState(null)
 
@@ -29,7 +29,11 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   function handleEvents(e: PixelMessage) {
     switch (e.data.eventName) {
       case 'vtex:addToCart': {
-        setItemsCartUpdate(e.data)        
+        if(e.data.id && e.data.id == "add-to-cart-button"){
+          setBuyButton(true)
+        }else{
+          setItemsCartUpdate(e.data)        
+        }
         return
       }
       default: {
@@ -67,13 +71,14 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   },[itemsCartUpdate]
   )
 
-  /*useEffect ( () => {
-    if(buyButton.clicked){
+  useEffect ( () => {
+    if(buyButton){
       setItemQuantity(itemQuantity+selectedQuantity)
+      setBuyButton(false)
     }
   },[buyButton]
   )
-  */
+  
   return(
     <div>
         {itemQuantity && `Ya tienes ${itemQuantity} en el carrito`}  

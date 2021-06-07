@@ -98,6 +98,7 @@ export interface PixelMessage extends MessageEvent {
     event: 'addToCart'
     eventName: 'vtex:addToCart'
     items: CartItem[]
+    id?: string
   }
   
   export interface RemoveToCartData extends EventData {
