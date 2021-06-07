@@ -20,7 +20,6 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   const [itemQuantity, setItemQuantity]: any = useState(null)
 
   const [buyButton, setBuyButton]: any = useState(null)
-  const selectedQuantity = productContextValue?.selectedQuantity
 
   const [itemsCartUpdate, setItemsCartUpdate]: any = useState(null)
 
@@ -30,7 +29,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     switch (e.data.eventName) {
       case 'vtex:addToCart': {
         if(e.data.id && e.data.id == "add-to-cart-button"){
-          setBuyButton(true)
+          setBuyButton(e.data)
         }else{
           setItemsCartUpdate(e.data)        
         }
@@ -47,12 +46,12 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   }
 
   useEffect ( () => {
-    if(loadingGetOrderForm){
+    /*if(loadingGetOrderForm){
       console.log("loadingGetOrderOrderForm",loadingGetOrderForm)
     }
     if(errorGetOrderForm){
       console.log("errorGetOrderOrderForm",errorGetOrderForm)
-    }
+    }*/
     if(dataGetOrderForm){
       const itemsOrderForm = dataGetOrderForm.orderForm.items
       const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id == productId);
@@ -65,17 +64,38 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     if(itemsCartUpdate){
       const itemsOrderForm = itemsCartUpdate.items
       const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId == productId);
-      setItemQuantity(itemFound?.quantity)
+      if(itemFound?.quantity){
+        setItemQuantity(itemFound?.quantity)
+      }else{
+        setItemQuantity(itemQuantity)
+      }
       //setItemsCartUpdate(null)        
+    }else{
+      setItemQuantity(itemQuantity)
     }
   },[itemsCartUpdate]
   )
 
   useEffect ( () => {
-    if(buyButton){
-      setItemQuantity(itemQuantity+selectedQuantity)
-      setBuyButton(false)
+    if(buyButton && itemQuantity){
+      console.log("entre",itemQuantity)
+      const itemsOrderForm = buyButton.items
+      const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId == productId);
+      if(itemFound?.quantity){
+        setItemQuantity(itemQuantity+itemFound?.quantity)
+      }else{
+        setItemQuantity(itemQuantity)
+      }
+    }else if(buyButton && !itemQuantity) {
+      const itemsOrderForm = buyButton.items
+      const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId == productId);
+      if(itemFound?.quantity){
+        setItemQuantity(0+itemFound?.quantity)
+      }
+    }else{
+      setItemQuantity(itemQuantity)
     }
+    setBuyButton(false)
   },[buyButton]
   )
   
