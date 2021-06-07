@@ -11,8 +11,10 @@ interface QuantityOnCartProps {
 const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
   const productContextValue = useProduct()
   const productId = productContextValue?.product?.items[0]?.itemId
-
   const [itemQuantity, setItemQuantity]: any = useState(null)
+
+  const selectedQuantity = productContextValue?.selectedQuantity
+  const buyButton = productContextValue?.buyButton
 
   const {
     data: dataGetOrderForm,
@@ -28,14 +30,20 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
       console.log("errorGetOrderOrderForm",errorGetOrderForm)
     }
     if(dataGetOrderForm){
-      console.log("dataGetOrderForm",dataGetOrderForm)
       const itemsOrderForm = dataGetOrderForm.orderForm.items
       const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id == productId);
-
       setItemQuantity(itemFound?.quantity)
     }
-  },[loadingGetOrderForm,errorGetOrderForm,dataGetOrderForm]//variable que escucha
+  },[loadingGetOrderForm,errorGetOrderForm,dataGetOrderForm]
   )
+
+  useEffect ( () => {
+    if(buyButton.clicked){
+      setItemQuantity(itemQuantity+selectedQuantity)
+    }
+  },[buyButton]
+  )
+
 
   return(
     <div>
