@@ -1,5 +1,5 @@
 {
-  "countdown": {
-    "component": "Countdown"
+  "quantity-on-cart": {
+    "component": "QuantityOnCart"
   }
 }

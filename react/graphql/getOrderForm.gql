@@ -1,0 +1,11 @@
+query getOrderForm {
+  orderForm {
+    orderFormId
+    items {
+      id
+      name
+      quantity
+      productId
+    }
+  }
+}
