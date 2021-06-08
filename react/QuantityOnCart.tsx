@@ -26,6 +26,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     const [mensaje, setMensaje]: any = useState(itemQuantity)
 
     const [pageView, setPageView]: any = useState(null)
+    //const [cartChange, setCartChange]: any = useState(null)
 
     const {data: dataGetOrderForm} = useQuery(getOrderForm)
 
@@ -45,8 +46,10 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             }
             case 'vtex:pageView': {
                 setPageView(e)
-                return
-            }
+                return}
+            /*case 'vtex:cartChanged': {
+                setCartChange(e)
+            }*/
             default: {
                 break
             }
