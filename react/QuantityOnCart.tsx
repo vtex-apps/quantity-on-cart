@@ -25,6 +25,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
 
+    const [pageView, setPageView]: any = useState(null)
 
     const {data: dataGetOrderForm} = useQuery(getOrderForm)
 
@@ -40,7 +41,10 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             }
             case 'vtex:removeFromCart': {
                 setItemsCartRemove(e.data)
-                //setItemQuantity(0)
+                return
+            }
+            case 'vtex:pageView': {
+                setPageView(e)
                 return
             }
             default: {
@@ -54,13 +58,12 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     }
 
     useEffect(() => {
-            console.log('me llamo on state change');
             if (dataGetOrderForm) {
                 const itemsOrderForm = dataGetOrderForm.orderForm.items
                 const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
                 setItemQuantity(itemFound?.quantity)
             }
-        }, [dataGetOrderForm,productContextValue]
+        }, [dataGetOrderForm,productId,pageView]
     )
 
     useEffect(() => {
@@ -104,7 +107,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             if (itemsCartRemove) {
                 const itemsOrderForm = itemsCartRemove.items
                 const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
-                if (itemFound) {
+                if (itemFound?.quantity) {
                     setItemQuantity(0)
                 }
             }
@@ -112,7 +115,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     )
 
     useEffect(() => {
-            if (itemQuantity) {
+            if (itemQuantity || itemQuantity === 0) {
                 setMensaje(itemQuantity)
             }
     }, [itemQuantity]
