@@ -18,13 +18,13 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   const productContextValue = useProduct()
   const productId = productContextValue?.product?.items[0]?.itemId
   const [itemQuantity, setItemQuantity]: any = useState(null)
-
   const [buyButton, setBuyButton]: any = useState(null)
-
   const [itemsCartUpdate, setItemsCartUpdate]: any = useState(null)
 
-  const { loading: loadingGetOrderForm, error: errorGetOrderForm, data: dataGetOrderForm } = useQuery(getOrderForm)
-  
+  const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
+
+  const { data: dataGetOrderForm } = useQuery(getOrderForm)
+
   function handleEvents(e: PixelMessage) {
     switch (e.data.eventName) {
       case 'vtex:addToCart': {
@@ -33,6 +33,10 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
         }else{
           setItemsCartUpdate(e.data)        
         }
+        return
+      }
+      case 'vtex:removeFromCart': {
+        setItemsCartRemove(e.data)
         return
       }
       default: {
@@ -46,18 +50,12 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
   }
 
   useEffect ( () => {
-    /*if(loadingGetOrderForm){
-      console.log("loadingGetOrderOrderForm",loadingGetOrderForm)
-    }
-    if(errorGetOrderForm){
-      console.log("errorGetOrderOrderForm",errorGetOrderForm)
-    }*/
     if(dataGetOrderForm){
       const itemsOrderForm = dataGetOrderForm.orderForm.items
       const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id == productId);
       setItemQuantity(itemFound?.quantity)
     }
-  },[loadingGetOrderForm,errorGetOrderForm,dataGetOrderForm]
+  },[dataGetOrderForm]
   )
 
   useEffect ( () => {
@@ -69,7 +67,6 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
       }else{
         setItemQuantity(itemQuantity)
       }
-      //setItemsCartUpdate(null)        
     }else{
       setItemQuantity(itemQuantity)
     }
@@ -78,7 +75,6 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
   useEffect ( () => {
     if(buyButton && itemQuantity){
-      console.log("entre",itemQuantity)
       const itemsOrderForm = buyButton.items
       const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId == productId);
       if(itemFound?.quantity){
@@ -92,16 +88,43 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
       if(itemFound?.quantity){
         setItemQuantity(0+itemFound?.quantity)
       }
-    }else{
+    }else {
       setItemQuantity(itemQuantity)
     }
+      /*
+      }else if (!buyButton && itemQuantity){
+        console.log("aca",productId)
+        setItemQuantity(itemQuantity)
+      }else{
+        setItemQuantity(0)
+        console.log("aca2",productId)
+      }
+      */
+
     setBuyButton(false)
   },[buyButton]
   )
-  
+
+  useEffect ( () => {
+    if(itemsCartRemove){
+      const itemsOrderForm = itemsCartRemove.items
+      const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId == productId);
+      if(itemFound?.quantity){
+        setItemQuantity(0)
+      }
+    }
+  },[itemsCartRemove]
+  )
+
+  var mensaje
+  if(itemQuantity && itemQuantity > 0){
+    mensaje = `Ya tienes ${itemQuantity} en el carrito`
+  }else{
+    mensaje = ``
+  }
   return(
     <div>
-        {itemQuantity && `Ya tienes ${itemQuantity} en el carrito`}  
+        {(!(itemQuantity === "undefined") && itemQuantity > 0) && mensaje}  
     </div>
   )
 }
