@@ -97,7 +97,11 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             const itemsOrderForm = itemsCartChangeBuyBotton.items
             const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
             if (itemFound?.quantity) {
-                setItemQuantity(itemQuantity + itemFound?.quantity)
+                if(itemQuantity === undefined){
+                    setItemQuantity(0 + itemFound?.quantity)
+                }else{
+                    setItemQuantity(itemQuantity + itemFound?.quantity)
+                }
             } else {
                 setItemQuantity(itemQuantity)
             }
