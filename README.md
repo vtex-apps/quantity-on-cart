@@ -1,3 +1,1 @@
-# Store Block course template
-
-Here you'll learn how to create awesome Store Framework blocks!
+1- Add "quantity-on-cart" on "product-summary.shelf" and at pdp
