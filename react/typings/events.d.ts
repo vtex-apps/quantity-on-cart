@@ -92,6 +92,7 @@ export interface PixelMessage extends MessageEvent {
     pageTitle: string
     pageUrl: string
     referrer: string
+    routeId?: string;
   }
   
   export interface AddToCartData extends EventData {

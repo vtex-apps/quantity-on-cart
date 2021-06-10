@@ -28,17 +28,17 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
     
-    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm)    
-    
+    const {data: dataGetOrderForm, refetch/*, called*/} = useQuery(getOrderForm)    
+
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
+            //console.log(0)
             const itemsOrderForm = dataGetOrderForm.orderForm.items
             const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
             setItemQuantity(itemFound?.quantity)
         }
     }, [dataGetOrderForm]
     )
-    
 
     useEffect(() => {
         if (productContextValue){
@@ -49,20 +49,26 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     }, [productContextValue]
     )
 
-    function handleEvents(e: PixelMessage) {
+    async function handleEvents(e: PixelMessage) {
         switch (e.data.eventName) {
             case 'vtex:removeFromCart': {
+                //console.log("removeFromCart")
                 setItemsCartRemove(e.data)
                 return
             }
             case 'vtex:pageView': {             
-                if (dataGetOrderForm && productId && called){
-                    refetch()
+                if (e.data.routeId === "store.product"){
+                    if (dataGetOrderForm && productContextValue){
+                        //console.log("pageView", e.data)
+                        refetch()
+                    }
                 }
+                
                 return
             }
             case 'vtex:cartChanged': {
                 if (dataGetOrderForm && productContextValue){
+                    //console.log("cartChanged")
                     setItemsCartChange(e.data)
                 }
                 return
@@ -70,6 +76,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             case 'vtex:addToCart': {
                 if (e.data.id && e.data.id === "add-to-cart-button"){
                     if (dataGetOrderForm && productContextValue){
+                        //console.log("addToCart")
                         setItemsCartChangeBuyBotton(e.data)
                     }
                 }
@@ -144,4 +151,3 @@ QuantityOnCart.schema = {
 }
 
 export default QuantityOnCart
-
