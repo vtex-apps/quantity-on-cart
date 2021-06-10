@@ -1,7 +1,7 @@
 {
-  "vendor": "vtex",
+  "vendor": "vtexarg",
   "name": "quantity-on-cart",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "title": "QuantityOnCart",
   "description": "QuantityOnCart component",
   "defaultLocale": "pt-BR",
@@ -9,6 +9,12 @@
     "messages": "1.x",
     "store": "0.x",
     "react": "3.x"
+  },
+  "billingOptions": {
+    "type": "free",
+    "availableCountries": [
+      "*"
+    ]
   },
   "dependencies": {
     "vtex.styleguide": "9.x",

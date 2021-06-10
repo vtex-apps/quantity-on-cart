@@ -17,104 +17,98 @@ interface QuantityOnCartProps {
 const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
     const productContextValue = useProduct()
     const productId = productContextValue?.product?.items[0]?.itemId
+    
     const [itemQuantity, setItemQuantity]: any = useState(null)
-    const [buyButton, setBuyButton]: any = useState(null)
-    const [itemsCartUpdate, setItemsCartUpdate]: any = useState(null)
 
     const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
 
+    const [itemsCartChange, setItemsCartChange]: any = useState(null)
+
     const [mensaje, setMensaje]: any = useState(itemQuantity)
 
-    const [pageView, setPageView]: any = useState(null)
-    //const [cartChange, setCartChange]: any = useState(null)
+    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm)
+    //const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm)
 
-    const {data: dataGetOrderForm} = useQuery(getOrderForm)
+    //getOrderFormQuery()
+    useEffect(() => {
+        if (dataGetOrderForm && productContextValue) {
+            const itemsOrderForm = dataGetOrderForm.orderForm.items
+            const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
+            setItemQuantity(itemFound?.quantity)
+        }
+    }, [dataGetOrderForm]
+    )
+
+    useEffect(() => {
+        if (productContextValue){
+            if (canUseDOM) {
+                window.addEventListener('message', handleEvents)
+            }
+        }
+    }, [productContextValue]
+    )
 
     function handleEvents(e: PixelMessage) {
         switch (e.data.eventName) {
-            case 'vtex:addToCart': {
-                if (e.data.id && e.data.id === "add-to-cart-button") {
-                    setBuyButton(e.data)
-                } else {
-                    setItemsCartUpdate(e.data)
-                }
-                return
-            }
             case 'vtex:removeFromCart': {
                 setItemsCartRemove(e.data)
                 return
             }
-            case 'vtex:pageView': {
-                setPageView(e)
-                return}
-            /*case 'vtex:cartChanged': {
-                setCartChange(e)
-            }*/
+            case 'vtex:pageView': {             
+                if (dataGetOrderForm && productId && called){
+                    //console.log("pageView",e)
+                    //problemas en este caso
+                    refetch()
+                    //setItemsCartChange(e.data)
+                }
+                return
+            }
+            
+            case 'vtex:cartChanged': {
+                if (dataGetOrderForm && productContextValue/* && called*/){
+                    //console.log("cartChanged")
+                    setItemsCartChange(e.data)
+                }
+                return
+            }
+            
+            case 'vtex:productView': {             
+                //if (dataGetOrderForm && productId/* && called*/){
+                    //console.log("productView",e)
+                    //problemas en este caso
+                    //setItemsCartChange(e.data)
+                //}
+                return
+            }
+
+
+
             default: {
                 break
             }
         }
     }
 
-    if (canUseDOM) {
-        window.addEventListener('message', handleEvents)
-    }
-
     useEffect(() => {
-            if (dataGetOrderForm) {
-                const itemsOrderForm = dataGetOrderForm.orderForm.items
-                const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
-                setItemQuantity(itemFound?.quantity)
-            }
-        }, [dataGetOrderForm,productId,pageView]
-    )
-
-    useEffect(() => {
-            if (itemsCartUpdate) {
-                const itemsOrderForm = itemsCartUpdate.items
+            if (itemsCartChange) {
+                const itemsOrderForm = itemsCartChange.items
                 const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
                 if (itemFound?.quantity) {
                     setItemQuantity(itemFound?.quantity)
-                } else {
-                    setItemQuantity(itemQuantity)
                 }
-            } else {
-                setItemQuantity(itemQuantity)
             }
-        }, [itemsCartUpdate]
+        }, [itemsCartChange]
     )
 
     useEffect(() => {
-            if (buyButton && itemQuantity) {
-                const itemsOrderForm = buyButton.items
-                const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
-                if (itemFound?.quantity) {
-                    setItemQuantity(itemQuantity + itemFound?.quantity)
-                } else {
-                    setItemQuantity(itemQuantity)
-                }
-            } else if (buyButton && !itemQuantity) {
-                const itemsOrderForm = buyButton.items
-                const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
-                if (itemFound?.quantity) {
-                    setItemQuantity(0 + itemFound?.quantity)
-                }
-            } else {
-                setItemQuantity(itemQuantity)
+        if (itemsCartRemove) {
+            const itemsOrderForm = itemsCartRemove.items
+            const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
+            if (itemFound?.quantity) {
+                setItemQuantity(0)
             }
-            setBuyButton(null)
-        }, [buyButton]
-    )
-
-    useEffect(() => {
-            if (itemsCartRemove) {
-                const itemsOrderForm = itemsCartRemove.items
-                const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
-                if (itemFound?.quantity) {
-                    setItemQuantity(0)
-                }
-            }
-        }, [itemsCartRemove]
+        }
+    }, [itemsCartRemove]
     )
 
     useEffect(() => {
