@@ -15,9 +15,8 @@ interface QuantityOnCartProps {
 
 const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
     const productContextValue = useProduct()
-    
     const productId = productContextValue?.product?.items[0]?.itemId
-    
+
     const [itemQuantity, setItemQuantity]: any = useState(null)
     
     const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
@@ -28,11 +27,10 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
     
-    const {data: dataGetOrderForm, refetch/*, called*/} = useQuery(getOrderForm)    
+    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm)    
 
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
-            //console.log(0)
             const itemsOrderForm = dataGetOrderForm.orderForm.items
             const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
             setItemQuantity(itemFound?.quantity)
@@ -43,6 +41,8 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     useEffect(() => {
         if (productContextValue){
             if (canUseDOM) {
+                // console.log("addEventListener")
+                window.removeEventListener('message', handleEvents)
                 window.addEventListener('message', handleEvents)
             }
         }
@@ -59,8 +59,11 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             case 'vtex:pageView': {             
                 if (e.data.routeId === "store.product"){
                     if (dataGetOrderForm && productContextValue){
-                        //console.log("pageView", e.data)
-                        refetch()
+                        // console.log("pageView", e.data)
+                        if(called) {
+                            refetch()
+                        }
+                        
                     }
                 }
                 
