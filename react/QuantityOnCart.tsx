@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {useProduct} from 'vtex.product-context'
 
-import {useQuery/*, useLazyQuery*/} from 'react-apollo'
+import {useQuery} from 'react-apollo'
 
 import getOrderForm from './graphql/getOrderForm.gql'
 
-import {canUseDOM/*, useRuntime*/} from 'vtex.render-runtime'
+import {canUseDOM, useRuntime} from 'vtex.render-runtime'
 
 import {PixelMessage,} from './typings/events'
 
@@ -20,13 +20,13 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
         return null
     }
     
-   /*
+
     const runtime = useRuntime()
-    const [pageState, setPageState] = useState(runtime) 
-    */
+    const [pageState/*, setPageState*/] = useState(runtime) 
+
     //const [productId, setProductId]: any = useState("")
     const productId = productContextValue?.product?.items[0].itemId
-    
+
     const [itemQuantity, setItemQuantity]: any = useState(null)
     
     const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
@@ -37,15 +37,16 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
     
-    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm, {ssr: false})    
+    const {data: dataGetOrderForm, refetch/*, called*/} = useQuery(getOrderForm, {ssr: false})    
 
-    /*
+    
     useEffect(() => {
-        console.log("Voy a hacer un refetch")
-        refetch()
+        if (dataGetOrderForm && productContextValue){
+            refetch()
+        }
     }, [pageState]
     )
-    */
+    
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
             const itemsOrderForm = dataGetOrderForm.orderForm.items
@@ -76,6 +77,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
                 setItemsCartRemove(e.data)
                 return
             }
+            /*
             case 'vtex:pageView': {             
                 //if (e.data.routeId === "store.product"){
                     if (dataGetOrderForm && productContextValue){
@@ -94,9 +96,9 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
                         
                     }
                 }
-                */
                 return
             }
+            */
             case 'vtex:cartChanged': {
                 if (dataGetOrderForm && productContextValue){
                     //console.log("cartChanged")
