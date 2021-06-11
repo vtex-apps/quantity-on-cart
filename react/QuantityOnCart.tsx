@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {useProduct} from 'vtex.product-context'
 
-import {useQuery} from 'react-apollo'
+import {useQuery/*, useLazyQuery*/} from 'react-apollo'
 
 import getOrderForm from './graphql/getOrderForm.gql'
 
-import {canUseDOM} from 'vtex.render-runtime'
+import {canUseDOM/*, useRuntime*/} from 'vtex.render-runtime'
 
 import {PixelMessage,} from './typings/events'
 
@@ -15,7 +15,19 @@ interface QuantityOnCartProps {
 
 const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
     const productContextValue = useProduct()
-    const productId = productContextValue?.product?.items[0]?.itemId
+
+    
+    /*
+    if(!productContextValue?.product?.items){
+        return null
+    }
+    */
+   
+   /*
+    const runtime = useRuntime()
+    const [pageState, setPageState] = useState(runtime) 
+    */
+    const [productId, setProductId]: any = useState("")
 
     const [itemQuantity, setItemQuantity]: any = useState(null)
     
@@ -27,8 +39,15 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
     
-    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm)    
+    const {data: dataGetOrderForm, refetch, called} = useQuery(getOrderForm, {ssr: false})    
 
+    /*
+    useEffect(() => {
+        console.log("Voy a hacer un refetch")
+        refetch()
+    }, [pageState]
+    )
+    */
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
             const itemsOrderForm = dataGetOrderForm.orderForm.items
@@ -38,6 +57,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     }, [dataGetOrderForm]
     )
 
+
     useEffect(() => {
         if (productContextValue){
             if (canUseDOM) {
@@ -45,6 +65,8 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
                 window.removeEventListener('message', handleEvents)
                 window.addEventListener('message', handleEvents)
             }
+            setProductId(productContextValue?.product?.items[0]?.itemId)
+            //productContextValue?.product?.items.length > 0 ? productContextValue?.product?.items[0].itemId :
         }
     }, [productContextValue]
     )
@@ -57,16 +79,24 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
                 return
             }
             case 'vtex:pageView': {             
-                if (e.data.routeId === "store.product"){
+                //if (e.data.routeId === "store.product"){
                     if (dataGetOrderForm && productContextValue){
-                        // console.log("pageView", e.data)
+                        //console.log("pageView store.product", e.data)
+                        if(called) {
+                            refetch()
+                        }
+                        
+                    }
+                /*}else if(e.data.routeId === "store.search#department"){
+                    if (dataGetOrderForm && productContextValue){
+                        //console.log("pageView store.search#department", e.data)
                         if(called) {
                             refetch()
                         }
                         
                     }
                 }
-                
+                */
                 return
             }
             case 'vtex:cartChanged': {
