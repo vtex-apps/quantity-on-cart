@@ -16,19 +16,17 @@ interface QuantityOnCartProps {
 const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
     const productContextValue = useProduct()
 
-    
-    /*
     if(!productContextValue?.product?.items){
         return null
     }
-    */
-   
+    
    /*
     const runtime = useRuntime()
     const [pageState, setPageState] = useState(runtime) 
     */
-    const [productId, setProductId]: any = useState("")
-
+    //const [productId, setProductId]: any = useState("")
+    const productId = productContextValue?.product?.items[0].itemId
+    
     const [itemQuantity, setItemQuantity]: any = useState(null)
     
     const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
@@ -65,7 +63,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
                 window.removeEventListener('message', handleEvents)
                 window.addEventListener('message', handleEvents)
             }
-            setProductId(productContextValue?.product?.items[0]?.itemId)
+            //setProductId(productContextValue?.product?.items[0]?.itemId)
             //productContextValue?.product?.items.length > 0 ? productContextValue?.product?.items[0].itemId :
         }
     }, [productContextValue]
