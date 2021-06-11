@@ -1,52 +1,51 @@
-import React, {useEffect, useState} from 'react'
-import {useProduct} from 'vtex.product-context'
+import React, { useEffect, useState } from 'react'
+import { useProduct } from 'vtex.product-context'
 
-import {useQuery} from 'react-apollo'
+import { useQuery } from 'react-apollo'
 
 import getOrderForm from './graphql/getOrderForm.gql'
 
-import {canUseDOM, useRuntime} from 'vtex.render-runtime'
+import { canUseDOM, useRuntime } from 'vtex.render-runtime'
 
-import {PixelMessage,} from './typings/events'
+import { PixelMessage, } from './typings/events'
 
 
 interface QuantityOnCartProps {
 }
 
-const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
+const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) => {
     const productContextValue = useProduct()
 
-    if(!productContextValue?.product?.items){
+    if (!productContextValue?.product?.items) {
         return null
     }
-    
 
     const runtime = useRuntime()
-    const [pageState/*, setPageState*/] = useState(runtime) 
+    const [pageState/*, setPageState*/] = useState(runtime)
 
     //const [productId, setProductId]: any = useState("")
     const productId = productContextValue?.product?.items[0].itemId
 
     const [itemQuantity, setItemQuantity]: any = useState(null)
-    
+
     const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
 
     const [itemsCartChange, setItemsCartChange]: any = useState(null)
-    
+
     const [itemsCartChangeBuyBotton, setItemsCartChangeBuyBotton]: any = useState(null)
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
-    
-    const {data: dataGetOrderForm, refetch/*, called*/} = useQuery(getOrderForm, {ssr: false})    
 
-    
+    const { data: dataGetOrderForm, refetch/*, called*/ } = useQuery(getOrderForm, { ssr: false })
+
+
     useEffect(() => {
-        if (dataGetOrderForm && productContextValue){
+        if (dataGetOrderForm && productContextValue) {
             refetch()
         }
     }, [pageState]
     )
-    
+
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
             const itemsOrderForm = dataGetOrderForm.orderForm.items
@@ -58,7 +57,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
 
 
     useEffect(() => {
-        if (productContextValue){
+        if (productContextValue) {
             if (canUseDOM) {
                 // console.log("addEventListener")
                 window.removeEventListener('message', handleEvents)
@@ -100,15 +99,15 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             }
             */
             case 'vtex:cartChanged': {
-                if (dataGetOrderForm && productContextValue){
+                if (dataGetOrderForm && productContextValue) {
                     //console.log("cartChanged")
                     setItemsCartChange(e.data)
                 }
                 return
             }
             case 'vtex:addToCart': {
-                if (e.data.id && e.data.id === "add-to-cart-button"){
-                    if (dataGetOrderForm && productContextValue){
+                if (e.data.id && e.data.id === "add-to-cart-button") {
+                    if (dataGetOrderForm && productContextValue) {
                         //console.log("addToCart")
                         setItemsCartChangeBuyBotton(e.data)
                     }
@@ -122,14 +121,14 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     }
 
     useEffect(() => {
-            if (itemsCartChange) {
-                const itemsOrderForm = itemsCartChange.items
-                const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
-                if (itemFound?.quantity) {
-                    setItemQuantity(itemFound?.quantity)
-                }
+        if (itemsCartChange) {
+            const itemsOrderForm = itemsCartChange.items
+            const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
+            if (itemFound?.quantity) {
+                setItemQuantity(itemFound?.quantity)
             }
-        }, [itemsCartChange]
+        }
+    }, [itemsCartChange]
     )
 
     useEffect(() => {
@@ -137,9 +136,9 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
             const itemsOrderForm = itemsCartChangeBuyBotton.items
             const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
             if (itemFound?.quantity) {
-                if(itemQuantity === undefined){
+                if (itemQuantity === undefined) {
                     setItemQuantity(0 + itemFound?.quantity)
-                }else{
+                } else {
                     setItemQuantity(itemQuantity + itemFound?.quantity)
                 }
             } else {
@@ -161,16 +160,16 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     )
 
     useEffect(() => {
-            if (itemQuantity || itemQuantity === 0) {
-                setMensaje(itemQuantity)
-            }
+        if (itemQuantity || itemQuantity === 0) {
+            setMensaje(itemQuantity)
+        }
     }, [itemQuantity]
     )
-    
+
     return (
         <div>
             <p>
-                { mensaje>0 ? `Tienes ${mensaje} en el carrito` : '' }
+                {mensaje > 0 ? `Tienes ${mensaje} en el carrito` : ''}
             </p>
         </div>
     )
