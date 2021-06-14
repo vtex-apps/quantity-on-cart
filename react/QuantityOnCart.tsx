@@ -9,6 +9,7 @@ import { canUseDOM, useRuntime } from 'vtex.render-runtime'
 
 import { PixelMessage, } from './typings/events'
 
+import { useCssHandles } from 'vtex.css-handles'
 
 interface QuantityOnCartProps {
 }
@@ -161,16 +162,17 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
 
     useEffect(() => {
         if (itemQuantity || itemQuantity === 0) {
-            setMensaje(itemQuantity)
+            setMensaje(itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier)
         }
     }, [itemQuantity]
     )
 
+    const CSS_HANDLES = ['quantityOnCart']
+    const handles = useCssHandles(CSS_HANDLES)
+
     return (
-        <div>
-            <p>
-                {mensaje > 0 ? `Tienes ${mensaje} en el carrito` : ''}
-            </p>
+        <div className={`${handles.quantityOnCart} t-body b mh1 mv2`}>
+            {mensaje > 0 ? `Tienes ${mensaje} en el carrito` : ''}
         </div>
     )
 }
