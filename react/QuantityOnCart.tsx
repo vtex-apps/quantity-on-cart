@@ -14,7 +14,7 @@ import { useCssHandles } from 'vtex.css-handles'
 interface QuantityOnCartProps {
 }
 
-const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) => {
+const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
     const productContextValue = useProduct()
 
     if (!productContextValue?.product?.items) {
@@ -22,9 +22,8 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
     }
 
     const runtime = useRuntime()
-    const [pageState/*, setPageState*/] = useState(runtime)
+    const [pageState] = useState(runtime)
 
-    //const [productId, setProductId]: any = useState("")
     const productId = productContextValue?.product?.items[0].itemId
 
     const [itemQuantity, setItemQuantity]: any = useState(null)
@@ -37,7 +36,7 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
 
     const [mensaje, setMensaje]: any = useState(itemQuantity)
 
-    const { data: dataGetOrderForm, refetch/*, called*/ } = useQuery(getOrderForm, { ssr: false })
+    const { data: dataGetOrderForm, refetch } = useQuery(getOrderForm, { ssr: false })
 
 
     useEffect(() => {
@@ -60,12 +59,9 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
     useEffect(() => {
         if (productContextValue) {
             if (canUseDOM) {
-                // console.log("addEventListener")
                 window.removeEventListener('message', handleEvents)
                 window.addEventListener('message', handleEvents)
             }
-            //setProductId(productContextValue?.product?.items[0]?.itemId)
-            //productContextValue?.product?.items.length > 0 ? productContextValue?.product?.items[0].itemId :
         }
     }, [productContextValue]
     )
@@ -73,35 +69,11 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
     async function handleEvents(e: PixelMessage) {
         switch (e.data.eventName) {
             case 'vtex:removeFromCart': {
-                //console.log("removeFromCart")
                 setItemsCartRemove(e.data)
                 return
             }
-            /*
-            case 'vtex:pageView': {             
-                //if (e.data.routeId === "store.product"){
-                    if (dataGetOrderForm && productContextValue){
-                        //console.log("pageView store.product", e.data)
-                        if(called) {
-                            refetch()
-                        }
-                        
-                    }
-                /*}else if(e.data.routeId === "store.search#department"){
-                    if (dataGetOrderForm && productContextValue){
-                        //console.log("pageView store.search#department", e.data)
-                        if(called) {
-                            refetch()
-                        }
-                        
-                    }
-                }
-                return
-            }
-            */
             case 'vtex:cartChanged': {
                 if (dataGetOrderForm && productContextValue) {
-                    //console.log("cartChanged")
                     setItemsCartChange(e.data)
                 }
                 return
@@ -109,7 +81,6 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
             case 'vtex:addToCart': {
                 if (e.data.id && e.data.id === "add-to-cart-button") {
                     if (dataGetOrderForm && productContextValue) {
-                        //console.log("addToCart")
                         setItemsCartChangeBuyBotton(e.data)
                     }
                 }
@@ -163,16 +134,18 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({ }) =
     useEffect(() => {
         if (itemQuantity || itemQuantity === 0) {
             setMensaje(itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier)
+        
         }
     }, [itemQuantity]
     )
 
-    const CSS_HANDLES = ['quantityOnCart']
+
+    const CSS_HANDLES = ["quantityOnCart"]
     const handles = useCssHandles(CSS_HANDLES)
 
     return (
-        <div className={`${handles.quantityOnCart} t-body b mh1 mv2`}>
-            {mensaje > 0 ? `Tienes ${mensaje} en el carrito` : ''}
+        <div className={`${handles.quantityOnCart} t-body mh1 mv2`}>
+            {mensaje > 0 ? `Tienes ${mensaje} unidades en el carrito` : ''}
         </div>
     )
 }
