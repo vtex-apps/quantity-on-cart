@@ -143,11 +143,13 @@ const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) =>
     const CSS_HANDLES = ["quantityOnCart"]
     const handles = useCssHandles(CSS_HANDLES)
 
+    if(!mensaje) return null;
     return (
         <div className={`${handles.quantityOnCart} t-body mh1 mv2`}>
-            {mensaje > 0 ? `Tienes ${mensaje} unidades en el carrito` : ''}
+            {mensaje > 0 ? `Tienes ${mensaje} unidades en el carrito` : null}
         </div>
     )
+    
 }
 
 QuantityOnCart.schema = {
