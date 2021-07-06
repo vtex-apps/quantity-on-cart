@@ -11,13 +11,11 @@ import { PixelMessage, } from './typings/events'
 
 import { useCssHandles } from 'vtex.css-handles'
 
-interface QuantityOnCartProps {
-}
 
-const QuantityOnCart: StorefrontFunctionComponent<QuantityOnCartProps> = ({}) => {
+
+const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
     const productContextValue = useProduct()
-
-    if (!productContextValue?.product?.items) {
+    if (!productContextValue?.product?.items) {        
         return null
     }
 
