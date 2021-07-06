@@ -12,6 +12,10 @@ See the quantity of products added to the cart.
 
 ![Media Placeholder](https://media.giphy.com/media/UA49VNyTkIoI1kSQwP/giphy.gif)
 
+:warning: **Quantity On Cart considerations:**
+- Does works with products without sku.
+- Does not works with promotions that split products.
+
 ---
 ## Configuration 
 
@@ -44,8 +48,7 @@ See the quantity of products added to the cart.
 ```
 ---
 ## Considerations 
-- Does works with products without sku.
-- Does not include promotions that split products.
+
 ---
 ## Customization
 
