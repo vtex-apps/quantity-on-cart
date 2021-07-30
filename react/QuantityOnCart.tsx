@@ -36,13 +36,15 @@ const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
 
     const { data: dataGetOrderForm, refetch } = useQuery(getOrderForm, { ssr: false })
 
+    if(productContextValue?.product?.items.length > 1){
+        return null
+    }
 
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
             refetch()
         }
-    }, [pageState]
-    )
+    }, [pageState])
 
     useEffect(() => {
         if (dataGetOrderForm && productContextValue) {
@@ -50,8 +52,7 @@ const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
             const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
             setItemQuantity(itemFound?.quantity)
         }
-    }, [dataGetOrderForm]
-    )
+    }, [dataGetOrderForm])
 
 
     useEffect(() => {
@@ -61,8 +62,7 @@ const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
                 window.addEventListener('message', handleEvents)
             }
         }
-    }, [productContextValue]
-    )
+    }, [productContextValue])
 
     async function handleEvents(e: PixelMessage) {
         switch (e.data.eventName) {
@@ -93,18 +93,17 @@ const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
     useEffect(() => {
         if (itemsCartChange) {
             const itemsOrderForm = itemsCartChange.items
-            const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
+            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
             if (itemFound?.quantity) {
                 setItemQuantity(itemFound?.quantity)
             }
         }
-    }, [itemsCartChange]
-    )
+    }, [itemsCartChange])
 
     useEffect(() => {
         if (itemsCartChangeBuyBotton) {
             const itemsOrderForm = itemsCartChangeBuyBotton.items
-            const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
+            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
             if (itemFound?.quantity) {
                 if (itemQuantity === undefined) {
                     setItemQuantity(0 + itemFound?.quantity)
@@ -115,28 +114,23 @@ const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
                 setItemQuantity(itemQuantity)
             }
         }
-    }, [itemsCartChangeBuyBotton]
-    )
+    }, [itemsCartChangeBuyBotton])
 
     useEffect(() => {
         if (itemsCartRemove) {
             const itemsOrderForm = itemsCartRemove.items
-            const itemFound = itemsOrderForm?.find((element: { productId: any }) => element.productId === productId);
+            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
             if (itemFound?.quantity) {
                 setItemQuantity(0)
             }
         }
-    }, [itemsCartRemove]
-    )
+    }, [itemsCartRemove])
 
     useEffect(() => {
         if (itemQuantity || itemQuantity === 0) {
             setMensaje(itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier)
-        
         }
-    }, [itemQuantity]
-    )
-
+    }, [itemQuantity])
 
     const CSS_HANDLES = ["quantityOnCart"]
     const handles = useCssHandles(CSS_HANDLES)
