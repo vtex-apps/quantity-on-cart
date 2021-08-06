@@ -1,7 +1,6 @@
-export interface TimeSplit {
-  hours: string
-  minutes: string
-  seconds: string
+export interface Item {
+  id: string
+  name: string
+  productId: string
+  quantity: number
 }
-
-type GenericObject = Record<string, any>

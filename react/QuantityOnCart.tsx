@@ -1,154 +1,206 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useProduct } from 'vtex.product-context'
-
 import { useQuery } from 'react-apollo'
+import { canUseDOM, useRuntime } from 'vtex.render-runtime'
+import { useCssHandles } from 'vtex.css-handles'
+import type {
+    MessageDescriptor} from 'react-intl';
+import {
+    useIntl,
+    defineMessages,
+  } from 'react-intl'
 
 import getOrderForm from './graphql/getOrderForm.gql'
+import type { PixelMessage } from './typings/events'
+import type { Item } from './typings/global'
 
-import { canUseDOM, useRuntime } from 'vtex.render-runtime'
+const QuantityOnCart: StorefrontFunctionComponent = () => {
+  const productContextValue = useProduct()
 
-import { PixelMessage, } from './typings/events'
+  if (!productContextValue?.product?.items) {
+    return null
+  }
 
-import { useCssHandles } from 'vtex.css-handles'
+  const runtime = useRuntime()
+  const [pageState] = useState(runtime)
 
+  const productId = productContextValue?.product?.items[0].itemId
 
+  const [itemQuantity, setItemQuantity] = useState<number>(0)
 
-const QuantityOnCart: StorefrontFunctionComponent = ({}) => {
-    const productContextValue = useProduct()
-    if (!productContextValue?.product?.items) {        
-        return null
+  const [itemsCartRemove, setItemsCartRemove] = useState<any>(null)
+
+  const [itemsCartChange, setItemsCartChange] = useState<any>(null)
+
+  const [itemsCartChangeBuyBotton, setItemsCartChangeBuyBotton] = useState<any>(
+    null
+  )
+
+  const [mensaje, setMensaje] = useState<typeof itemQuantity>(itemQuantity)
+
+  const [key, setKey] = useState<string>('')
+
+  const { data: dataGetOrderForm, refetch } = useQuery(getOrderForm, {
+    ssr: false,
+  })
+
+  const intl = useIntl()
+
+  const messagesInternationalization = defineMessages({
+    have: { id: 'store/quantity-on-cart.have' },
+    units: { id: 'store/quantity-on-cart.units' },
+  })
+  
+  const translateMessage = (message: MessageDescriptor) =>
+    intl.formatMessage(message)
+
+  if (productContextValue?.product?.items.length > 1) {
+    return null
+  }
+
+  useEffect(() => {
+    if (dataGetOrderForm && productContextValue) {
+      refetch()
     }
+  }, [pageState])
 
-    const runtime = useRuntime()
-    const [pageState] = useState(runtime)
+  useEffect(() => {
+    if (dataGetOrderForm && productContextValue) {
+      const itemsOrderForm = dataGetOrderForm.orderForm.items
+      const itemFound: Item  = itemsOrderForm?.find(
+        (element: { id: any }) => element.id === productId
+      )
 
-    const productId = productContextValue?.product?.items[0].itemId
-
-    const [itemQuantity, setItemQuantity]: any = useState(null)
-
-    const [itemsCartRemove, setItemsCartRemove]: any = useState(null)
-
-    const [itemsCartChange, setItemsCartChange]: any = useState(null)
-
-    const [itemsCartChangeBuyBotton, setItemsCartChangeBuyBotton]: any = useState(null)
-
-    const [mensaje, setMensaje]: any = useState(itemQuantity)
-
-    const { data: dataGetOrderForm, refetch } = useQuery(getOrderForm, { ssr: false })
-
-    if(productContextValue?.product?.items.length > 1){
-        return null
+      setItemQuantity(itemFound?.quantity)
+    }else{
+        null
     }
+  }, [dataGetOrderForm])
 
-    useEffect(() => {
+  useEffect(() => {
+    if (productContextValue) {
+      if (canUseDOM) {
+        window.removeEventListener('message', handleEvents)
+        window.addEventListener('message', handleEvents)
+      }
+    }
+  }, [productContextValue])
+
+  async function handleEvents(e: PixelMessage) {
+    switch (e.data.eventName) {
+        
+      case 'vtex:removeFromCart': {
+        setItemsCartRemove(e.data)
+        break
+      }
+
+      case 'vtex:cartChanged': {
         if (dataGetOrderForm && productContextValue) {
-            refetch()
+          setItemsCartChange(e.data)
         }
-    }, [pageState])
 
-    useEffect(() => {
-        if (dataGetOrderForm && productContextValue) {
-            const itemsOrderForm = dataGetOrderForm.orderForm.items
-            const itemFound = itemsOrderForm?.find((element: { id: any }) => element.id === productId);
-            setItemQuantity(itemFound?.quantity)
+        break
+      }
+
+      case 'vtex:addToCart': {
+        if (e.data.id && e.data.id === 'add-to-cart-button') {
+          if (dataGetOrderForm && productContextValue) {
+            setItemsCartChangeBuyBotton(e.data)
+          }
         }
-    }, [dataGetOrderForm])
 
+        break
+      }
 
-    useEffect(() => {
-        if (productContextValue) {
-            if (canUseDOM) {
-                window.removeEventListener('message', handleEvents)
-                window.addEventListener('message', handleEvents)
-            }
-        }
-    }, [productContextValue])
-
-    async function handleEvents(e: PixelMessage) {
-        switch (e.data.eventName) {
-            case 'vtex:removeFromCart': {
-                setItemsCartRemove(e.data)
-                return
-            }
-            case 'vtex:cartChanged': {
-                if (dataGetOrderForm && productContextValue) {
-                    setItemsCartChange(e.data)
-                }
-                return
-            }
-            case 'vtex:addToCart': {
-                if (e.data.id && e.data.id === "add-to-cart-button") {
-                    if (dataGetOrderForm && productContextValue) {
-                        setItemsCartChangeBuyBotton(e.data)
-                    }
-                }
-                return
-            }
-            default: {
-                break
-            }
-        }
+      default: {
+        break
+      }
     }
+  }
 
-    useEffect(() => {
-        if (itemsCartChange) {
-            const itemsOrderForm = itemsCartChange.items
-            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
-            if (itemFound?.quantity) {
-                setItemQuantity(itemFound?.quantity)
-            }
+  useEffect(() => {
+    if (itemsCartChange) {
+      const itemsOrderForm = itemsCartChange.items
+      const itemFound: Item  = itemsOrderForm?.find(
+        (element: any) => element.skuId === productId
+      )
+
+      if (itemFound?.quantity) {
+          setItemQuantity(itemFound?.quantity)
+      }
+    }else{
+        null
+    }
+  }, [itemsCartChange])
+
+  useEffect(() => {
+    if (itemsCartChangeBuyBotton) {
+      const itemsOrderForm = itemsCartChangeBuyBotton.items
+      const itemFound: Item = itemsOrderForm?.find(
+        (element: any) => element.skuId === productId
+      )
+
+      if (itemFound?.quantity) {
+        if (itemQuantity === undefined) {
+          setItemQuantity(0 + itemFound?.quantity)
+        } else {
+          setItemQuantity(itemQuantity + itemFound?.quantity)
         }
-    }, [itemsCartChange])
+      } else {
+        setItemQuantity(itemQuantity)
+      }
+    }else{
+        null
+    }
+  }, [itemsCartChangeBuyBotton])
 
-    useEffect(() => {
-        if (itemsCartChangeBuyBotton) {
-            const itemsOrderForm = itemsCartChangeBuyBotton.items
-            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
-            if (itemFound?.quantity) {
-                if (itemQuantity === undefined) {
-                    setItemQuantity(0 + itemFound?.quantity)
-                } else {
-                    setItemQuantity(itemQuantity + itemFound?.quantity)
-                }
-            } else {
-                setItemQuantity(itemQuantity)
-            }
-        }
-    }, [itemsCartChangeBuyBotton])
+  useEffect(() => {
+    if (itemsCartRemove) {
+      const itemsOrderForm = itemsCartRemove.items
+      const itemFound: Item  = itemsOrderForm?.find(
+        (element: any) => element.skuId === productId
+      )
 
-    useEffect(() => {
-        if (itemsCartRemove) {
-            const itemsOrderForm = itemsCartRemove.items
-            const itemFound = itemsOrderForm?.find((element: any) => element.skuId == productId);
-            if (itemFound?.quantity) {
-                setItemQuantity(0)
-            }
-        }
-    }, [itemsCartRemove])
+      if (itemFound?.quantity) {
+        setItemQuantity(0)
+      }
+    }else{
+        null
+    }
+  }, [itemsCartRemove])
 
-    useEffect(() => {
-        if (itemQuantity || itemQuantity === 0) {
-            setMensaje(itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier)
-        }
-    }, [itemQuantity])
+  useEffect(() => {
+    if (itemQuantity || itemQuantity === 0) {
+      setMensaje(
+        itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier
+      )
+      setKey(`quantity-on-cart-${  productId.toString()}`)
+    }else{
+        null
+    }
+  }, [itemQuantity])
 
-    const CSS_HANDLES = ["quantityOnCart"]
-    const handles = useCssHandles(CSS_HANDLES)
+  const CSS_HANDLES = ['quantityOnCart']
+  const handles = useCssHandles(CSS_HANDLES)
 
-    if(!mensaje) return null;
-    return (
-        <div className={`${handles.quantityOnCart} t-body mh1 mv2`}>
-            {mensaje > 0 ? `Tienes ${mensaje} unidades en el carrito` : null}
-        </div>
-    )
-    
+  if (!mensaje) return null
+  
+  
+
+  return (
+    <div key={key} id={key} className={`${handles.quantityOnCart} t-body mh1 mv2`}>
+      {mensaje > 0 ? `${translateMessage(messagesInternationalization.have)} ${mensaje} ${translateMessage(messagesInternationalization.units)}` : null}
+    </div>
+  )
 }
 
 QuantityOnCart.schema = {
-    title: 'editor.quantity-on-cart.title',
-    description: 'editor.quantity-on-cart.description',
-    type: 'object',
-    properties: {},
+  title: 'editor.quantity-on-cart.title',
+  description: 'editor.quantity-on-cart.description',
+  type: 'object',
+  properties: {},
 }
 
 export default QuantityOnCart
