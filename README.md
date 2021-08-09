@@ -10,7 +10,7 @@
 
 See the quantity of products added to the cart.
 
-![Media Placeholder](https://media.giphy.com/media/UA49VNyTkIoI1kSQwP/giphy.gif)
+![Media Placeholder](https://user-images.githubusercontent.com/55905671/128712768-142df993-6ac5-40c6-b689-d0da791a5ed7.gif)
 
 :warning: **Quantity On Cart considerations:**
 - Does works with products without sku.

@@ -1,0 +1,14 @@
+{
+  "name": "Quantity On Cart",
+  "headline": "See the quantity of products added to the cart.",
+  "overview": "The Quantity On Cart application allows you to see how many products you added to the cart. This will help to avoid to open the minicart to see how many you added, you will see it below each product!",
+  "features": [
+    "See how many prodcuts you added to the cart",
+    "Avoid to open the minicart",
+    "Know all the time that you are buying"
+  ],
+  "websiteURL": "https://vtex.com/",
+  "support": {
+    "url": "https://support.vtex.com/hc/requests"
+  }
+}
