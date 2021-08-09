@@ -1,10 +1,9 @@
 {
   "vendor": "vtexarg",
   "name": "quantity-on-cart",
-  "version": "2.1.12",
+  "version": "2.2.0",
   "title": "QuantityOnCart",
   "description": "QuantityOnCart component",
-  "defaultLocale": "pt-BR",
   "builders": {
     "messages": "1.x",
     "store": "0.x",
