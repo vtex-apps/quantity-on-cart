@@ -14,10 +14,11 @@
       "url": "https://support.vtex.com/hc/requests"
     },
     "type": "free",
-    "availableCountries": ["*"]
+    "availableCountries": [
+      "*"
+    ]
   },
   "dependencies": {
-    "vtex.styleguide": "9.x",
     "vtex.css-handles": "0.x",
     "vtex.product-context": "0.x",
     "vtex.store-graphql": "2.x",
