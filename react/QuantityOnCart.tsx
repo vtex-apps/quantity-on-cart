@@ -196,11 +196,4 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
   )
 }
 
-QuantityOnCart.schema = {
-  title: 'editor.quantity-on-cart.title',
-  description: 'editor.quantity-on-cart.description',
-  type: 'object',
-  properties: {},
-}
-
 export default QuantityOnCart
