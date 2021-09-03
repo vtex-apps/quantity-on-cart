@@ -1,11 +1,10 @@
 {
   "name": "Quantity On Cart",
   "headline": "See the quantity of products added to the cart.",
-  "overview": "The Quantity On Cart application allows you to see how many products you added to the cart. This will help to avoid to open the minicart to see how many you added, you will see it below each product!",
+  "overview": "With Quantity On Cart, your users can now see the quantity of products they have added to their cart directly, creating a more seamless and dynamic experience for buyers. \\n Make your clients' shopping experience easier by eliminating the hassle of clicking through minicarts or leaving to figure out how many products have been added.",
   "features": [
-    "See how many prodcuts you added to the cart",
-    "Avoid to open the minicart",
-    "Know all the time that you are buying"
+    "Same-page display of products added to the cart",
+    "Integration with minicart for live count"
   ],
   "websiteURL": "https://vtex.com/",
   "support": {
