@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* Typings for `render-runtime` */
 declare module 'vtex.render-runtime' {
-  import { Component, ComponentType, ReactElement, ReactType } from 'react'
+  import type { ComponentType, ReactElement, ReactType } from 'react';
+import { Component } from 'react'
 
   export interface NavigationOptions {
     page: string
@@ -35,4 +38,6 @@ declare module 'vtex.render-runtime' {
   export const withRuntimeContext: <TOriginalProps extends GenericObject>(
     Component: ComponentType<TOriginalProps & RenderContextProps>
   ) => ComponentType<TOriginalProps>
+  export const useRuntime: () => Runtime.RenderContext
+
 }

@@ -1,16 +1,15 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useProduct } from 'vtex.product-context'
 import { useQuery } from 'react-apollo'
 import { canUseDOM, useRuntime } from 'vtex.render-runtime'
 import { useCssHandles } from 'vtex.css-handles'
-import type {
-    MessageDescriptor} from 'react-intl';
 import {
     useIntl,
-    defineMessages,
-  } from 'react-intl'
+    defineMessages} from 'react-intl';
+import type { MessageDescriptor
+  } from 'react-intl';
+
 
 import getOrderForm from './graphql/getOrderForm.gql'
 import type { PixelMessage } from './typings/events'
@@ -121,54 +120,47 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
   }
 
   useEffect(() => {
-    if (itemsCartChange) {
-      const itemsOrderForm = itemsCartChange.items
-      const itemFound: Item  = itemsOrderForm?.find(
-        (element: any) => element.skuId === productId
-      )
+    if(!itemsCartChange) return
 
-      if (itemFound?.quantity) {
-          setItemQuantity(itemFound?.quantity)
-      }
-    }else{
-        null
+    const { items }  = itemsCartChange
+    const itemFound = items?.find(({ skuId }: any) => skuId === productId)
+
+    if (itemFound?.quantity) {
+        setItemQuantity(itemFound?.quantity)
     }
+    
   }, [itemsCartChange])
 
   useEffect(() => {
-    if (itemsCartChangeBuyBotton) {
-      const itemsOrderForm = itemsCartChangeBuyBotton.items
-      const itemFound: Item = itemsOrderForm?.find(
-        (element: any) => element.skuId === productId
-      )
+    
+    if(!itemsCartChangeBuyBotton) return
 
-      if (itemFound?.quantity) {
-        if (itemQuantity === undefined) {
-          setItemQuantity(0 + itemFound?.quantity)
-        } else {
-          setItemQuantity(itemQuantity + itemFound?.quantity)
-        }
+    const { items } = itemsCartChangeBuyBotton
+    const itemFound: Item = items?.find(({ skuId }: any) => skuId === productId)
+
+    if (itemFound?.quantity) {
+      if (itemQuantity === undefined) {
+        setItemQuantity(0 + itemFound?.quantity)
       } else {
-        setItemQuantity(itemQuantity)
+        setItemQuantity(itemQuantity + itemFound?.quantity)
       }
-    }else{
-        null
+    } else {
+      setItemQuantity(itemQuantity)
     }
+
   }, [itemsCartChangeBuyBotton])
 
   useEffect(() => {
-    if (itemsCartRemove) {
-      const itemsOrderForm = itemsCartRemove.items
-      const itemFound: Item  = itemsOrderForm?.find(
-        (element: any) => element.skuId === productId
-      )
+    
+    if(!itemsCartRemove) return
 
-      if (itemFound?.quantity) {
-        setItemQuantity(0)
-      }
-    }else{
-        null
+    const {items} = itemsCartRemove
+    const itemFound: Item = items?.find(({ skuId }: any) => skuId === productId)
+
+    if (itemFound?.quantity) {
+      setItemQuantity(0)
     }
+    
   }, [itemsCartRemove])
 
   useEffect(() => {
