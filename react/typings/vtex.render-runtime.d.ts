@@ -3,7 +3,7 @@
 /* Typings for `render-runtime` */
 declare module 'vtex.render-runtime' {
   import type { ComponentType, ReactElement, ReactType } from 'react';
-import { Component } from 'react'
+  import { Component } from 'react'
 
   export interface NavigationOptions {
     page: string

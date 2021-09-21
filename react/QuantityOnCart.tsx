@@ -1,18 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useProduct } from 'vtex.product-context'
 import { useQuery } from 'react-apollo'
 import { canUseDOM, useRuntime } from 'vtex.render-runtime'
 import { useCssHandles } from 'vtex.css-handles'
-import {
-    useIntl,
-    defineMessages} from 'react-intl';
-import type { MessageDescriptor
-  } from 'react-intl';
-
+import { useIntl, defineMessages } from 'react-intl'
+// eslint-disable-next-line prettier/prettier
+import type { MessageDescriptor } from 'react-intl'
 
 import getOrderForm from './graphql/getOrderForm.gql'
-import type { PixelMessage } from './typings/events'
+import type {
+  PixelMessage,
+  RemoveToCartData,
+  CartChangedData,
+  AddToCartData,
+  CartItem,
+} from './typings/events'
 import type { Item } from './typings/global'
 
 const QuantityOnCart: StorefrontFunctionComponent = () => {
@@ -29,15 +31,14 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
 
   const [itemQuantity, setItemQuantity] = useState<number>(0)
 
-  const [itemsCartRemove, setItemsCartRemove] = useState<any>(null)
+  const [itemsCartRemove, setItemsCartRemove] = useState<RemoveToCartData>()
 
-  const [itemsCartChange, setItemsCartChange] = useState<any>(null)
+  const [itemsCartChange, setItemsCartChange] = useState<CartChangedData>()
 
-  const [itemsCartChangeBuyBotton, setItemsCartChangeBuyBotton] = useState<any>(
-    null
-  )
+  const [itemsCartChangeBuyButton, setItemsCartChangeBuyButton] =
+    useState<AddToCartData>()
 
-  const [mensaje, setMensaje] = useState<typeof itemQuantity>(itemQuantity)
+  const [messages, setMessages] = useState<typeof itemQuantity>(itemQuantity)
 
   const [key, setKey] = useState<string>('')
 
@@ -51,7 +52,7 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
     have: { id: 'store/quantity-on-cart.have' },
     units: { id: 'store/quantity-on-cart.units' },
   })
-  
+
   const translateMessage = (message: MessageDescriptor) =>
     intl.formatMessage(message)
 
@@ -66,30 +67,25 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
   }, [pageState])
 
   useEffect(() => {
-    if (dataGetOrderForm && productContextValue) {
-      const itemsOrderForm = dataGetOrderForm.orderForm.items
-      const itemFound: Item  = itemsOrderForm?.find(
-        (element: { id: any }) => element.id === productId
-      )
+    if (!dataGetOrderForm || !productContextValue) return
 
-      setItemQuantity(itemFound?.quantity)
-    }else{
-        null
-    }
+    const itemsOrderForm = dataGetOrderForm.orderForm.items
+    const itemFound: Item = itemsOrderForm?.find(
+      (element: { id: string }) => element.id === productId
+    )
+
+    setItemQuantity(itemFound?.quantity)
   }, [dataGetOrderForm])
 
   useEffect(() => {
-    if (productContextValue) {
-      if (canUseDOM) {
-        window.removeEventListener('message', handleEvents)
-        window.addEventListener('message', handleEvents)
-      }
-    }
+    if (!productContextValue || !canUseDOM) return
+
+    window.removeEventListener('message', handleEvents)
+    window.addEventListener('message', handleEvents)
   }, [productContextValue])
 
   async function handleEvents(e: PixelMessage) {
     switch (e.data.eventName) {
-        
       case 'vtex:removeFromCart': {
         setItemsCartRemove(e.data)
         break
@@ -106,7 +102,7 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
       case 'vtex:addToCart': {
         if (e.data.id && e.data.id === 'add-to-cart-button') {
           if (dataGetOrderForm && productContextValue) {
-            setItemsCartChangeBuyBotton(e.data)
+            setItemsCartChangeBuyButton(e.data)
           }
         }
 
@@ -120,23 +116,23 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
   }
 
   useEffect(() => {
-    if(!itemsCartChange) return
+    if (!itemsCartChange) return
 
-    const { items }  = itemsCartChange
-    const itemFound = items?.find(({ skuId }: any) => skuId === productId)
+    const { items } = itemsCartChange
+    const itemFound = items?.find(({ skuId }) => skuId === productId)
 
     if (itemFound?.quantity) {
-        setItemQuantity(itemFound?.quantity)
+      setItemQuantity(itemFound?.quantity)
     }
-    
   }, [itemsCartChange])
 
   useEffect(() => {
-    
-    if(!itemsCartChangeBuyBotton) return
+    if (!itemsCartChangeBuyButton) return
 
-    const { items } = itemsCartChangeBuyBotton
-    const itemFound: Item = items?.find(({ skuId }: any) => skuId === productId)
+    const { items } = itemsCartChangeBuyButton
+    const itemFound: CartItem | undefined = items?.find(
+      ({ skuId }) => skuId === productId
+    )
 
     if (itemFound?.quantity) {
       if (itemQuantity === undefined) {
@@ -147,43 +143,50 @@ const QuantityOnCart: StorefrontFunctionComponent = () => {
     } else {
       setItemQuantity(itemQuantity)
     }
-
-  }, [itemsCartChangeBuyBotton])
+  }, [itemsCartChangeBuyButton])
 
   useEffect(() => {
-    
-    if(!itemsCartRemove) return
+    if (!itemsCartRemove) return
 
-    const {items} = itemsCartRemove
-    const itemFound: Item = items?.find(({ skuId }: any) => skuId === productId)
+    const { items } = itemsCartRemove
+    const itemFound: CartItem | undefined = items?.find(
+      ({ skuId }) => skuId === productId
+    )
 
     if (itemFound?.quantity) {
       setItemQuantity(0)
     }
-    
   }, [itemsCartRemove])
 
   useEffect(() => {
     if (itemQuantity || itemQuantity === 0) {
-      setMensaje(
+      setMessages(
         itemQuantity * productContextValue?.product?.items[0]?.unitMultiplier
       )
-      setKey(`quantity-on-cart-${  productId.toString()}`)
-    }else{
-        null
+      setKey(`quantity-on-cart-${productId.toString()}`)
+    } else {
+      null
     }
   }, [itemQuantity])
 
   const CSS_HANDLES = ['quantityOnCart']
   const handles = useCssHandles(CSS_HANDLES)
 
-  if (!mensaje) return null
-  
-  
+  if (!messages) return null
 
   return (
-    <div key={key} id={key} className={`${handles.quantityOnCart} t-body mh1 mv2`}>
-      {mensaje > 0 ? `${translateMessage(messagesInternationalization.have)} ${mensaje} ${translateMessage(messagesInternationalization.units)}` : null}
+    <div
+      key={key}
+      id={key}
+      className={`${handles.quantityOnCart} t-body mh1 mv2`}
+    >
+      {messages > 0
+        ? `${translateMessage(
+            messagesInternationalization.have
+          )} ${messages} ${translateMessage(
+            messagesInternationalization.units
+          )}`
+        : null}
     </div>
   )
 }
