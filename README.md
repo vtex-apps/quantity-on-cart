@@ -8,53 +8,55 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- DOCS-IGNORE:end -->
 
-See the quantity of products added to the cart.
+The **Quantity On Cart app** displays a message informing customers of the quantity of the same product they have added to the cart.
 
-![Media Placeholder](https://user-images.githubusercontent.com/55905671/128712768-142df993-6ac5-40c6-b689-d0da791a5ed7.gif)
+![app-example](https://user-images.githubusercontent.com/67270558/162291375-e469fb78-ef87-4eeb-bd8b-f228a4579a52.gif)
 
-:warning: **Quantity On Cart considerations:**
-- Does works with products without sku.
-- Does not works with promotions that split products.
+> ⚠️
+> 
+> The Quantity On Cart app does not work with promotions that split products.
 
----
 ## Configuration 
 
-1. Using your terminal and the [VTEX IO Toolbelt](https://vtex.io/docs/recipes/development/vtex-io-cli-installment-and-command-reference), log into the desired VTEX account.
-2. Run `vtex install vtexarg.quantity-on-cart` on the account you're working on.
-3. Add the app as a theme peerDependency in the `manifest.json` file;
+1. Open the terminal and use the [VTEX IO CLI](https://vtex.io/docs/recipes/development/vtex-io-cli-installment-and-command-reference) to log into the desired VTEX account.
+2. Run the following command to install the Quantity On Cart app:
+```
+vtex install vtexarg.quantity-on-cart
+```  
+4. Open your store’s Store Theme app directory in your code editor.
+5. Open your app's `manifest.json` file and add the Quantity On Cart app under the `peerDependencies` field.
+
 ```json
 "peerDependencies": {
   "vtexarg.quantity-on-cart": "2.x"
 }
 ```
-4. Add the `quantity-on-cart` to other theme block using the product context, such as the `product-summary.shelf`. In the example below, the `quantity-on-cart` is added to the `flex-layout.col#right-col` block from the `flex-layout.row#product-main` block from the `store.product` template (which uses the product context):
+4. Add the `quantity-on-cart` block to other theme block using a product context since the `quantity-on-cart` block handles product data. For example, the [`product-summary.shelf`](https://developers.vtex.com/vtex-developer-docs/docs/vtex-product-summary-productsummaryshelf#configuration):
 
 ```json
-  "store.product": {
+  {
+  "product-summary.shelf": {
     "children": [
-      "flex-layout.row#product-main",
+    + "quantity-on-cart"
     ]
   },
-  "flex-layout.row#product": {
-    "children": [
-      "flex-layout.col#right-col"
-    ]
-  },
-  "flex-layout.col#right-col": {
-    "children": [
-      "quantity-on-cart"
-    ]
-  }
+...
 ```
+After step 4, no further configuration is needed, and the app is ready to use in your store.
+
+> ℹ️
+> 
+> The displayed message in the Quantity On Cart app is available in three languages: English, Spanish, and Portuguese, and follows the pattern below, which cannot be changed: `You have x units in your shopping cart.`
+
 ---
 ## Customization
 
-In order to apply CSS customizations in this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://vtex.io/docs/recipes/style/using-css-handles-for-store-customization).
+To apply CSS customizations in this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-using-css-handles-for-store-customization).
 
 | CSS Handles |
 | ----------- | 
 | `quantityOnCart` | 
----
+
 <!-- DOCS-IGNORE:start -->
 
 ## Contributors ✨
