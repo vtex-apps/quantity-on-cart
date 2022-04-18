@@ -14,7 +14,7 @@ The **Quantity On Cart app** displays a message informing customers of the quant
 
 > ⚠️
 > 
-> The Quantity On Cart app does not work with promotions that split products.
+> The Quantity On Cart app does not work with promotions scenarios such as [Buy Together](https://help.vtex.com/en/tutorial/buy-together--tutorials_323) and [Buy One Get One](https://help.vtex.com/en/tutorial/buy-one-get-one--tutorials_322).
 
 ## Configuration 
 
