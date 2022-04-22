@@ -8,7 +8,7 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- DOCS-IGNORE:end -->
 
-The **Quantity On Cart app** displays a message informing customers of the quantity of the same product they have added to the cart.
+The Quantity on Cart app allows you to display a message to your customers informing how many units of a product they have added to the cart. This message can be displayed in a [Shelf](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-building-a-shelf) or in a product page.
 
 ![app-example](https://user-images.githubusercontent.com/67270558/162291375-e469fb78-ef87-4eeb-bd8b-f228a4579a52.gif)
 
@@ -23,15 +23,15 @@ The **Quantity On Cart app** displays a message informing customers of the quant
 ```
 vtex install vtexarg.quantity-on-cart
 ```  
-4. Open your store’s Store Theme app directory in your code editor.
-5. Open your app's `manifest.json` file and add the Quantity On Cart app under the `peerDependencies` field.
+3. Open your store’s Store Theme app directory in your code editor.
+4. Open your app's `manifest.json` file and add the Quantity On Cart app under the `peerDependencies` field.
 
 ```json
 "peerDependencies": {
   "vtexarg.quantity-on-cart": "2.x"
 }
 ```
-4. Add the `quantity-on-cart` block to other theme block using a product context since the `quantity-on-cart` block handles product data. For example, the [`product-summary.shelf`](https://developers.vtex.com/vtex-developer-docs/docs/vtex-product-summary-productsummaryshelf#configuration):
+5. Add the `quantity-on-cart` block to other theme block using a product context since the `quantity-on-cart` block handles product data, such as the `store.product`or the [`product-summary.shelf`](https://developers.vtex.com/vtex-developer-docs/docs/vtex-product-summary-productsummaryshelf#configuration). For the example below, we have added to the `product-summary.shelf`:
 
 ```json
   {
@@ -42,11 +42,11 @@ vtex install vtexarg.quantity-on-cart
   },
 ...
 ```
-After step 4, no further configuration is needed, and the app is ready to use in your store.
+After step 5, no further configuration is needed, and the app is ready to use in your store.
 
 > ℹ️
 > 
-> The displayed message in the Quantity On Cart app is available in three languages: English, Spanish, and Portuguese, and follows the pattern below, which cannot be changed: `You have x units in your shopping cart.`
+> The displayed message in the Quantity On Cart app is available in three languages: English (EN), Spanish (ES), and Portuguese (PT), and follows the pattern below, which cannot be changed: EN - `You have x units in your shopping cart.` | ES - `Tienes x unidades en el carrito.` | PT - `Você tem x unidades no carrinho.`
 
 ---
 ## Customization
