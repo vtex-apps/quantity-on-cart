@@ -1,7 +1,7 @@
 {
   "vendor": "vtexarg",
   "name": "quantity-on-cart",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "title": "QuantityOnCart",
   "description": "QuantityOnCart component",
   "builders": {
@@ -15,7 +15,9 @@
       "url": "https://support.vtex.com/hc/requests"
     },
     "type": "free",
-    "availableCountries": ["*"]
+    "availableCountries": [
+      "*"
+    ]
   },
   "dependencies": {
     "vtex.css-handles": "0.x",
